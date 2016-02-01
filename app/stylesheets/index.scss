@@ -1,0 +1,314 @@
+/* layout */
+
+$sidebar-base-width: 180px;
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-size: 13px;
+  color: $gray-darkest;
+  overflow: hidden;
+}
+
+.main {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.sidebar {
+  flex: 0 1 $sidebar-base-width;
+  flex-flow: column nowrap;
+  background-color: $gray-lightest;
+  // border-right: 1px solid $gray-lighter;
+
+  > h1 {
+    color: $gray;
+    font-size: 12px;
+    letter-spacing: 0.035em;
+    text-transform: uppercase;
+    margin: 15px 0 0;
+    padding: 5px 15px;
+  }
+
+  > ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    > li {
+      display: block;
+
+      > a {
+        display: block;
+        color: $gray-darker;
+        padding: 5px 15px 5px 32px;
+
+        &:hover {
+          background-color: transparent;
+          text-decoration: none;
+        }
+
+        &.active,
+        &.active:hover {
+          background-color: $gray-lighter;
+        }
+
+        .glyphicon {
+          position: relative;
+          top: 2px;
+          left: -7px;
+          color: $gray-dark;
+        }
+      }
+    }
+  }
+}
+
+.content {
+  display: flex;
+  flex-flow: column nowrap;
+  flex: 1 1 0;
+  position: relative;
+  height: 100%;
+  background-color: white;
+}
+
+.content.library {
+  > .library-header {
+    display: flex;
+    flex-flow: row nowrap;
+    flex: 0 0 45px;
+    border-bottom: 1px solid $gray-lighter;
+    padding: 0 20px;
+
+    > .searchbox {
+      display: flex;
+      flex-flow: row nowrap;
+      flex: 1 1 auto;
+      justify-content: flex-start;
+      align-items: center;
+
+      > input {
+        font-size: 14px;
+        display: inline-block;
+        border: none;
+        width: 100%;
+
+        &:focus {
+          outline: none;
+        }
+
+        &::-webkit-input-placeholder {
+          color: $gray;
+        }
+      }
+    }
+
+    > .toolbar {
+      display: flex;
+      flex-flow: row nowrap;
+      flex: 0 1 auto;
+      justify-content: flex-end;
+      align-items: center;
+
+      > .toolbar-button {
+        display: inline-block;
+        font-size: 14px;
+        margin-left: 20px;
+        color: $gray;
+        /*
+        border: 1px solid $gray-light;
+        border-radius: 10px;
+        padding: 5px 10px;
+        */
+
+        > .glyphicon {
+          position: relative;
+          top: 2px;
+        }
+      }
+    }
+  }
+
+  > .library-content {
+    display: flex;
+    flex-flow: column nowrap;
+    flex: 1 1 0;
+    overflow: auto;
+
+    .library-item {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: flex-start;
+      align-items: stretch;
+      width: calc(100% - 30px);
+      height: 100%;
+      margin: 0 15px;
+      padding: 0 15px;
+
+      > .library-item-info {
+        display: flex;
+        flex-flow: column nowrap;
+        max-width: 100%;
+        justify-content: center;
+
+        > .library-item-info-row {
+          display: flex;
+          flex-flow: row nowrap;
+          max-width: 100%;
+          justify-content: flex-start;
+
+          > .delimiter {
+            margin-right: 0.25em;
+          }
+
+          > .library-item-author {
+            flex: 0 1 auto;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+
+          > .library-item-title {
+            flex: 0 1 auto;
+            overflow: hidden;
+            font-weight: bold;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+
+          > .library-item-meta {
+            flex: 0 0 auto;
+            overflow-x: hidden;
+            margin-left: 0.5em;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+
+    .not-first-child > .library-item {
+      border-top: 1px solid $gray-lighter;
+    }
+  }
+}
+
+/* components */
+
+.virtualscroll {
+  flex: 1 1 0;
+  display: block;
+  overflow: auto;
+
+  > ul {
+    display: block;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    > li {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+  }
+}
+
+.flextable {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  width: 100%;
+  min-width: 320px;
+  margin-bottom: $line-height-computed;
+
+  > thead,
+  > tbody,
+  > tfoot {
+    display: flex;
+    flex-direction: column;
+    flex: 0 1 auto;
+    overflow-y: scroll;
+
+    > tr {
+      display: flex;
+      flex-direction: row;
+      flex: 0 1 auto;
+      justify-content: space-between;
+      align-items: center;
+      overflow-y: scroll;
+      border-top: 1px solid $table-border-color;
+
+      > th,
+      > td {
+        display: block;
+        flex: 1 1 0%;
+        padding: $table-cell-padding;
+        line-height: $line-height-base;
+      }
+    }
+  }
+
+  > thead > tr {
+    align-items: flex-end;
+    border-bottom: 2px solid $table-border-color;
+  }
+
+  > caption + thead,
+  > colgroup + thead,
+  > thead:first-child:not(.not-first-child),
+  > thead.first-child,
+  > tbody:first-child:not(.not-first-child),
+  > tbody.first-child {
+    > tr:first-child:not(.not-first-child),
+    > tr.first-child {
+      border-top: 0;
+    }
+  }
+
+  > tbody + tbody {
+    border-top: 2px solid $table-border-color;
+  }
+
+  .flextable {
+    background-color: $body-bg;
+  }
+}
+
+.dropzone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 10;
+
+  &.active {
+    background-color: rgba(255, 255, 255, 0.95);
+  }
+
+  &.active::after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 15px;
+    bottom: 15px;
+    right: 15px;
+    left: 15px;
+    border: 5px dashed #ccc;
+    border-radius: 20px;
+  }
+}

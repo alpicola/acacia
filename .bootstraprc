@@ -1,0 +1,13 @@
+{
+  "bootstrapVersion": 3,
+  "styleLoaders": ["style", "css", "sass"],
+  "styles": {
+    "mixins": true,
+    "normalize": true,
+    "glyphicons": true,
+    "scaffolding": true
+  },
+  "scripts": false,
+  "bootstrapCustomizations": "./app/stylesheets/bootstrap/customizations.scss",
+  "appStyles": "./app/stylesheets/index.scss"
+}
