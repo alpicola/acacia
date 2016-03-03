@@ -18,8 +18,8 @@ function model(actions) {
 
 function view(state$, {searchBoxVTree$, toolbarVTree$, listVTree$, dropzoneVTree$}) {
   return Observable.combineLatest(
-    state$, searchBoxVTree$, toolbarVTree$, listVTree$, dropzoneVTree$,
-    (state, searchBoxVTree, toolbarVTree, listVTree, dropzoneVTree) => {
+    searchBoxVTree$, toolbarVTree$, listVTree$, dropzoneVTree$,
+    (searchBoxVTree, toolbarVTree, listVTree, dropzoneVTree) => {
       return (
         <div className="content library">
           <div className="library-header">

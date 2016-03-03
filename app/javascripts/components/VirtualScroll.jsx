@@ -125,49 +125,48 @@ function updateState(props, viewScroll, state) {
 }
 
 function view(state$, itemsVTrees$) {
-  itemsVTrees$.subscribe();
-  // state affects itemsVTrees
-  return state$.flatMapLatest(state => {
-    return itemsVTrees$.map(itemsVTrees => {
-      let viewStyle = {
-        width: toCSSLength(state.props.viewWidth),
-        height: toCSSLength(state.props.viewHeight)
-      };
-      let listStyle = {
-        height: `${state.props.total * state.props.rowHeight}px`
-      };
+  return Observable.combineLatest(
+    state$, itemsVTrees$,
+    (state, itemsVTrees) => { return {state, itemsVTrees} }
+  ).debounce(0).map(({state, itemsVTrees}) => {
+    let viewStyle = {
+      width: toCSSLength(state.props.viewWidth),
+      height: toCSSLength(state.props.viewHeight)
+    };
+    let listStyle = {
+      height: `${state.props.total * state.props.rowHeight}px`
+    };
 
-      let listItemVTrees = itemsVTrees.map((itemVTree, index) => {
-        let rowIndex = state.visibleRows[index];
-        if (rowIndex != null) {
-          let listItemClass = rowIndex == 0 ? 'first-child' : 'not-first-child';
-          let listItemStyle = {
-            top: `${state.props.rowHeight * rowIndex}px`,
-            height: `${state.props.rowHeight}px`
-          };
-          return (
-            <li className={listItemClass} style={listItemStyle}>
-              {itemVTree}
-            </li>
-          );
-        } else {
-          let listItemStyle = {
-            display: 'none'
-          };
-          return (
-            <li style={listItemStyle}></li>
-          );
-        }
-      });
-
-      return (
-        <div style={viewStyle} className="virtualscroll">
-          <ul style={listStyle}>
-            {listItemVTrees}
-          </ul>
-        </div>
-      );
+    let listItemVTrees = itemsVTrees.map((itemVTree, index) => {
+      let rowIndex = state.visibleRows[index];
+      if (rowIndex != null) {
+        let listItemClass = rowIndex == 0 ? 'first-child' : 'not-first-child';
+        let listItemStyle = {
+          top: `${state.props.rowHeight * rowIndex}px`,
+          height: `${state.props.rowHeight}px`
+        };
+        return (
+          <li className={listItemClass} style={listItemStyle}>
+            {itemVTree}
+          </li>
+        );
+      } else {
+        let listItemStyle = {
+          display: 'none'
+        };
+        return (
+          <li style={listItemStyle}></li>
+        );
+      }
     });
+
+    return (
+      <div style={viewStyle} className="virtualscroll">
+        <ul style={listStyle}>
+          {listItemVTrees}
+        </ul>
+      </div>
+    );
   });
 }
 
@@ -184,8 +183,8 @@ function toCSSLength(value) {
   }
 }
 
-export default function VituralScroll(Component) {
-  return function VituralScroll({DOM, props$}) {
+export default function VirturalScroll(Component) {
+  return function VirturalScroll({DOM, props$}) {
     let actions = intent(DOM);
     let state$ = model(props$, actions);
 

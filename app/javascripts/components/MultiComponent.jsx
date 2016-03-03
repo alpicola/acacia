@@ -2,25 +2,24 @@ import {Observer, Observable, Subject, CompositeDisposable} from "rx";
 import isolate from "@cycle/isolate";
 
 function makeComponent(index, DOM, Component, propsProxy$, actionsProxies, vtreesProxy$) {
-  // TODO: isolate
   let {DOM: vtree$, actions} = isolate(Component)({DOM, props$: propsProxy$});
   let actionsSubscription = subscribeComponentActions(index, actions, actionsProxies)
   let vtreeSubscription = subscribeComponentVTree(index, vtree$, vtreesProxy$);
-  return new CompositeDisposable();
+  return new CompositeDisposable(actionsSubscription, vtreeSubscription);
 }
 
 function subscribeComponentActions(index, actions, subjects) {
   let subscription = new CompositeDisposable();
   for (let key in Object.keys(actions)) {
     subscription.add(
-      actions[key].map(action => { return {index, action}; }).subscribe(subjects[key])
+      actions[key].map(value => { return {index, value}; }).subscribe(subjects[key])
     );
   }
   return subscription;
 }
 
 function subscribeComponentVTree(index, vtree$, subject) {
-  let subscription = vtree$.map(value => { return {index, value}; }).subscribe(subject);
+  let subscription = vtree$.map(action => { return {index, action}; }).subscribe(subject);
   return subscription;
 }
 
@@ -96,7 +95,7 @@ export default function MultiComponent(Component) {
         }
         vtrees[index] = vtree;
       }).skipWhile(_ => numOfVTrees < multiplicity).map(_ => vtrees);
-    }).startWith([]).shareReplay(1);
+    }).startWith([]).share();
 
     return {DOM: vtrees$, actions: actionsProxies};
   };
