@@ -46,6 +46,7 @@ function renderAuthor(author) {
 
 export default function LibraryItem({DOM, props$}) {
   let vtree$ = view(props$);
+  let action$ = Observable.empty();
 
-  return {DOM: vtree$, actions: {}};
+  return {DOM: vtree$, action$};
 }

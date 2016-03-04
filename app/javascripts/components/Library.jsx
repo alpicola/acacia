@@ -8,7 +8,7 @@ import Dropzone from './Dropzone.jsx';
 import DBLP from '../utils/searchengines/DBLP'
 
 // mock
-function model(actions) {
+function model() {
   let initialState = {items: []};
   let itemsPromise = DBLP.searchPublications('geometry of interaction');
   return Observable.fromPromise(itemsPromise).map(items => {
@@ -38,14 +38,14 @@ function view(state$, {searchBoxVTree$, toolbarVTree$, listVTree$, dropzoneVTree
 
 export default function Library({DOM}) {
   let searchBoxProps$ = Observable.just();
-  let {DOM: searchBoxVTree$, actions: searchBoxActions} = SearchBox({DOM, props$: searchBoxProps$});
+  let {DOM: searchBoxVTree$} = SearchBox({DOM, props$: searchBoxProps$});
   let toolbarProps$ = Observable.just();
-  let {DOM: toolbarVTree$, actions: toolbarActions} = Toolbar({DOM, props$: toolbarProps$});
+  let {DOM: toolbarVTree$} = Toolbar({DOM, props$: toolbarProps$});
   let dropzoneProps$ = Observable.just({disabled: false});
-  let {DOM: dropzoneVTree$, actions: dropzoneActions} = Dropzone({DOM, props$: dropzoneProps$});
+  let {DOM: dropzoneVTree$} = Dropzone({DOM, props$: dropzoneProps$});
 
-  let actions = {dropzoneActions};
-  let state$ = model(actions);
+  let listActionProxy$ = new Subject();
+  let state$ = model({listAction$: listActionProxy$});
 
   let listProps$ = state$.map(state => {
     return {
@@ -56,7 +56,8 @@ export default function Library({DOM}) {
       total: state.items.length
     };
   }).shareReplay(1);
-  let {DOM: listVTree$, listActions} = VirtualScroll(LibraryItem)({DOM, props$: listProps$});
+  let {DOM: listVTree$, action$: listAction$} = VirtualScroll(LibraryItem)({DOM, props$: listProps$});
+  listAction$.subscribe(listActionProxy$);
 
   let children = {searchBoxVTree$, toolbarVTree$, listVTree$, dropzoneVTree$};
   let vtree$ = view(state$, children);

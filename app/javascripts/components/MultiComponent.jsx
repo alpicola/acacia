@@ -1,49 +1,27 @@
 import {Observer, Observable, Subject, CompositeDisposable} from "rx";
 import isolate from "@cycle/isolate";
 
-function makeComponent(index, DOM, Component, propsProxy$, actionsProxies, vtreesProxy$) {
-  let {DOM: vtree$, actions} = isolate(Component)({DOM, props$: propsProxy$});
-  let actionsSubscription = subscribeComponentActions(index, actions, actionsProxies)
+function makeComponent(index, DOM, Component, propsProxy$, actionsProxy$, vtreesProxy$) {
+  let {DOM: vtree$, action$} = isolate(Component)({DOM, props$: propsProxy$});
+  let actionsSubscription = subscribeComponentActions(index, action$, actionsProxy$)
   let vtreeSubscription = subscribeComponentVTree(index, vtree$, vtreesProxy$);
   return new CompositeDisposable(actionsSubscription, vtreeSubscription);
 }
 
-function subscribeComponentActions(index, actions, subjects) {
-  let subscription = new CompositeDisposable();
-  for (let key in Object.keys(actions)) {
-    subscription.add(
-      actions[key].map(value => { return {index, value}; }).subscribe(subjects[key])
-    );
-  }
+function subscribeComponentActions(index, action$, subject) {
+  let subscription = action$.map(value => { return {index, value}; }).subscribe(subject);
   return subscription;
 }
 
 function subscribeComponentVTree(index, vtree$, subject) {
-  let subscription = vtree$.map(action => { return {index, action}; }).subscribe(subject);
+  let subscription = vtree$.map(value => { return {index, value}; }).subscribe(subject);
   return subscription;
-}
-
-function makeComponentPropsProxy() {
-  return new Subject();
-}
-
-function makeComponentActionsProxies(actions) {
-  let subjects = {};
-  for (let key in Object.keys(actions)) {
-    subjects[key] = new Subject();
-  }
-  return subjects;
-}
-
-function makeComponentVTreeProxy() {
-  return new Subject();
 }
 
 export default function MultiComponent(Component) {
   return function MultiComponent({DOM, componentsProps$, props$}) {
-    let {actions: dummyActions} = Component({DOM, props$: Observable.empty()});
-    let vtreesProxy$ = makeComponentVTreeProxy();
-    let actionsProxies = makeComponentActionsProxies(dummyActions);
+    let vtreesProxy$ = new Subject();
+    let actionsProxy$ = new Subject();
     let propsProxies = [];
     let propsBuffer = {};
     let subscriptions = [];
@@ -61,10 +39,10 @@ export default function MultiComponent(Component) {
       let multiplicity = subscriptions.length;
       if (multiplicity < multiplicityNew) {
         while (multiplicity < multiplicityNew) {
-          let propsProxy$ = makeComponentPropsProxy();
+          let propsProxy$ = new Subject();
           propsProxies.push(propsProxy$);
           let subscription = makeComponent(
-            multiplicity, DOM, Component, propsProxy$, actionsProxies, vtreesProxy$
+            multiplicity, DOM, Component, propsProxy$, actionsProxy$, vtreesProxy$
           );
           subscriptions.push(subscription);
           if (propsBuffer[multiplicity] != null) {
@@ -97,6 +75,6 @@ export default function MultiComponent(Component) {
       }).skipWhile(_ => numOfVTrees < multiplicity).map(_ => vtrees);
     }).startWith([]).share();
 
-    return {DOM: vtrees$, actions: actionsProxies};
+    return {DOM: vtrees$, action$: actionsProxy$};
   };
 }

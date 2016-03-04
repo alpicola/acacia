@@ -19,8 +19,8 @@ function view(state$, {sidebarVTree$, contentVTree$}) {
 
 export default function Main({DOM}) {
   let state$ = Observable.just();
-  let {DOM: sidebarVTree$, actions: sidebarActions} = Sidebar({DOM});
-  let {DOM: contentVTree$, actions: contentActions} = Library({DOM});
+  let {DOM: sidebarVTree$} = Sidebar({DOM});
+  let {DOM: contentVTree$} = Library({DOM});
   let vtree$ = view(state$, {sidebarVTree$, contentVTree$});
 
   return {DOM: vtree$};

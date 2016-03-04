@@ -35,9 +35,8 @@ function model(props$, actions) {
   };
   return Observable.combineLatest(
     props$, actions.viewResize$,
-    (props, viewResize) => {
-      return {props, viewHeight: viewResize.height, viewScroll: viewResize.scroll};
-    }
+    (props, viewResize) =>
+      ({props, viewHeight: viewResize.height, viewScroll: viewResize.scroll})
   ).flatMapLatest(({props, viewHeight, viewScroll}) => {
     let initialState = initializeState(props, viewHeight, viewScroll);
     return actions.viewScroll$.scan((state, viewScroll) => {
@@ -127,7 +126,7 @@ function updateState(props, viewScroll, state) {
 function view(state$, itemsVTrees$) {
   return Observable.combineLatest(
     state$, itemsVTrees$,
-    (state, itemsVTrees) => { return {state, itemsVTrees} }
+    (state, itemsVTrees) => ({state, itemsVTrees})
   ).debounce(0).map(({state, itemsVTrees}) => {
     let viewStyle = {
       width: toCSSLength(state.props.viewWidth),
@@ -194,11 +193,15 @@ export default function VirturalScroll(Component) {
     let itemsProps$ = state$.flatMap(state => {
       return Observable.from(state.updatedItems);
     });
-    let {DOM: itemsVTrees$, actions: itemsActions} =
+    let {DOM: itemsVTrees$, action$: itemsAction$} =
       MultiComponent(Component)({DOM, componentsProps$: itemsProps$, props$: multiProps$});
+    let rowsAction$ = itemsAction$.withLatestFrom(state$, ({index, value}, state) => {
+      let rowIndex = state.visibleRows[index];
+      return {index: rowIndex, value}
+    });
 
     let vtree$ = view(state$, itemsVTrees$);
 
-    return {DOM: vtree$};
+    return {DOM: vtree$, action$: rowsAction$};
   };
 }

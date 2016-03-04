@@ -43,9 +43,10 @@ export default function Dropzone({DOM, props$}) {
   let actions = intent(DOM);
   let state$ = model(props$, actions);
   let vtree$ = view(state$);
+  let action$ = actions.drop$.map(value => ({type: 'drop', value})).share();
 
   return {
     DOM: vtree$,
-    actions: {drop$: actions.drop$}
+    action$
   };
 }
