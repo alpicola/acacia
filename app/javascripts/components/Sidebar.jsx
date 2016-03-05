@@ -6,7 +6,7 @@ function view(state$) {
   return state$.map(state => {
     return (
       <div className="sidebar">
-        <h1>My Library</h1>
+        <h1>Library</h1>
         <ul>
           <li><a className="active" href="/library/"><i className="glyphicon glyphicon-briefcase"></i>All Documents</a></li>
           <li><a href="/library/authors/"><i className="glyphicon glyphicon-education"></i>All Authors</a></li>

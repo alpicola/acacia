@@ -1,3 +1,52 @@
+/* common */
+
+input[type="text"],
+input[type="number"],
+input[type="email"],
+textarea {
+  position: relative;
+  top: -3px;
+  display: inline-block;
+  border: 1px solid $gray-light;
+  border-radius: 1px;
+  padding: 2px 4px;
+  background-color: white;
+
+  &:focus {
+    outline: none;
+    border: 1px solid $gray;
+  }
+
+  &::-webkit-input-placeholder {
+    color: $gray;
+  }
+}
+
+input[type="text"],
+input[type="email"],
+textarea {
+  width: 100%;
+}
+
+input[type="number"] {
+  width: 5em;
+}
+
+button {
+  display: inline-block;
+  padding: 2px 14px 1px;
+  text-align: center;
+  border: 1px solid;
+  border-color: $gray-lighter $gray-light lighten(#000, 68.5%);
+  border-radius: 4px;
+  background-color: white;
+  box-shadow: 0.05px 0.1px 0 rgba(0, 0, 0, 0.3);
+
+  &:focus {
+    outline: none;
+  }
+}
+
 /* layout */
 
 $sidebar-base-width: 180px;
@@ -32,11 +81,12 @@ body {
 
   > h1 {
     color: $gray;
-    font-size: 12px;
+    font-size: 11px;
     letter-spacing: 0.035em;
     text-transform: uppercase;
+    font-weight: normal;
     margin: 15px 0 0;
-    padding: 5px 15px;
+    padding: 3px 10px 3px;
   }
 
   > ul {
@@ -50,7 +100,8 @@ body {
       > a {
         display: block;
         color: $gray-darker;
-        padding: 5px 15px 5px 32px;
+        padding: 3px 10px 3px 20px;
+        font-size: 12px;
 
         &:hover {
           background-color: transparent;
@@ -64,9 +115,10 @@ body {
 
         .glyphicon {
           position: relative;
-          top: 2px;
+          top: 3px;
           left: -7px;
           color: $gray-dark;
+          font-size: 14px;
         }
       }
     }
@@ -97,18 +149,14 @@ body {
       justify-content: flex-start;
       align-items: center;
 
-      > input {
+      > input[type="text"] {
         font-size: 14px;
         display: inline-block;
         border: none;
         width: 100%;
 
         &:focus {
-          outline: none;
-        }
-
-        &::-webkit-input-placeholder {
-          color: $gray;
+          border: none;
         }
       }
     }
@@ -205,6 +253,40 @@ body {
 
 /* components */
 
+.form {
+  display: flex;
+  flex-flow: column nowrap;
+  flex: 1 1 0;
+  overflow: auto;
+
+  > .form-group {
+    display: flex;
+    flex-flow: row nowrap;
+    max-width: 100%;
+    justify-content: flex-start;
+    padding: 4px 0 0;
+    margin-bottom: 4px;
+
+    > label {
+      flex: 0 0 10%;
+      margin-right: 8px;
+      text-align: right;
+    }
+  }
+
+  > .form-action {
+    display: flex;
+    flex-flow: row nowrap;
+    max-width: 100%;
+    justify-content: flex-end;
+    margin-top: 4px;
+
+    > button {
+      margin-left: 8px;
+    }
+  }
+}
+
 .virtualscroll {
   flex: 1 1 0;
   display: block;
@@ -227,64 +309,24 @@ body {
   }
 }
 
-.flextable {
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
-  width: 100%;
-  min-width: 320px;
-  margin-bottom: $line-height-computed;
+.modal {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 20;
+  background-color: rgba(0, 0, 0, 0.5);
 
-  > thead,
-  > tbody,
-  > tfoot {
-    display: flex;
-    flex-direction: column;
-    flex: 0 1 auto;
-    overflow-y: scroll;
-
-    > tr {
-      display: flex;
-      flex-direction: row;
-      flex: 0 1 auto;
-      justify-content: space-between;
-      align-items: center;
-      overflow-y: scroll;
-      border-top: 1px solid $table-border-color;
-
-      > th,
-      > td {
-        display: block;
-        flex: 1 1 0%;
-        padding: $table-cell-padding;
-        line-height: $line-height-base;
-      }
-    }
-  }
-
-  > thead > tr {
-    align-items: flex-end;
-    border-bottom: 2px solid $table-border-color;
-  }
-
-  > caption + thead,
-  > colgroup + thead,
-  > thead:first-child:not(.not-first-child),
-  > thead.first-child,
-  > tbody:first-child:not(.not-first-child),
-  > tbody.first-child {
-    > tr:first-child:not(.not-first-child),
-    > tr.first-child {
-      border-top: 0;
-    }
-  }
-
-  > tbody + tbody {
-    border-top: 2px solid $table-border-color;
-  }
-
-  .flextable {
-    background-color: $body-bg;
+  > .modal-dialog {
+    position: absolute;
+    width: 500px;
+    top: 80px;
+    left: calc(50% - 250px);
+    padding: 15px 20px;
+    border-radius: 3px;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   }
 }
 

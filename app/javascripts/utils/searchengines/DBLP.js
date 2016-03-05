@@ -1,4 +1,5 @@
 import URLSearchParams from 'url-search-params'; // polyfill
+import {fetchXML, fetchHTML} from '../fetch.js'
 
 const DBLP_SEARCH_API_ENDPOINT = 'http://dblp.uni-trier.de/search/publ/api'
 
@@ -14,14 +15,13 @@ function searchPublications(query) {
   return fetchXML(url).then(doc => {
     return Array.from(doc.querySelectorAll('result > hits > hit'), hit => {
       let info = hit.querySelector('info');
-      return {
-        id: hit.id,
-        authors: Array.from(info.querySelector('authors').children, _ => _.textContent),
-        title: info.querySelector('title').textContent,
-        venue: info.querySelector('venue').textContent,
-        year: info.querySelector('year').textContent,
-        bibURL: info.querySelector('url').textContent
-      };
+      let authorsElem = info.querySelector('authors');
+      let authors = authorsElem ? Array.from(authorsElem.children, _ => _.textContent) : [];
+      let title = info.querySelector('title').textContent;
+      let venue = info.querySelector('venue').textContent;
+      let year = info.querySelector('year').textContent;
+      let bibURL = info.querySelector('url').textContent;
+      return {id: hit.id, authors, title, venue, year, bibURL};
     });
   });
 }
@@ -37,31 +37,5 @@ function getBibTexFromBibURL(url) {
   })
 }
 
-function fetchJSON(url) {
-  return fetch(url).then(response => {
-    return response.json();
-  });
-}
 
-function fetchXML(url) {
-  return fetch(url).then(response => {
-    return response.text();
-  }).then(text => {
-    let parser = new DOMParser();
-    return parser.parseFromString(text, 'application/xml');
-  });
-}
-
-function fetchHTML(url) {
-  return fetch(url).then(response => {
-    return response.text();
-  }).then(text => {
-    let parser = new DOMParser();
-    return parser.parseFromString(text, 'text/html');
-  });
-}
-
-export default {
-  searchPublications,
-  getBibTexFromBibURL
-}
+export default {searchPublications, getBibTexFromBibURL}

@@ -14,7 +14,7 @@ function intent(DOM) {
     dropzone.events('dragleave').map(e => false),
     dropzone.events('drop').do(preventDefault).map(e => false)
   ).startWith(false).distinctUntilChanged().share();
-  let drop$ = dropzone.events('drop').map(e => e.dataTransfer.files).shareReplay(1);
+  let drop$ = dropzone.events('drop').map(e => e.dataTransfer.files).share();
   return {trigger$, dragOver$, drop$};
 }
 
@@ -31,10 +31,11 @@ function model(props$, actions) {
 
 function view(state$) {
   return state$.map(state => {
-    let dropzoneStyle = {display: state.disabled ? 'none' : 'block'};
     let dropzoneClass = {active: state.active};
     return (
-      <div style={dropzoneStyle} className={classNames('dropzone', dropzoneClass)}></div>
+      state.disabled
+        ? <noscript></noscript>
+        : <div className={classNames('dropzone', dropzoneClass)}></div>
     );
   });
 }
